@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bizim Hikayemiz ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- GENEL AYARLAR --- */
+        body { margin: 0; font-family: 'Nunito', sans-serif; background-color: #e5ddd5; overflow: hidden; height: 100vh; }
+        
+        /* --- GİRİŞ EKRANI (Login) --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .login-box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; width: 80%; max-width: 300px; }
+        .login-box h2 { color: #333; margin-bottom: 20px; }
+        .login-box input { width: 85%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
+        .login-btn { background: #ff6b6b; color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; width: 95%; font-size: 16px; margin-top: 15px; font-weight: bold; transition: 0.3s; }
+        .login-btn:hover { background: #ee5253; transform: scale(1.02); }
+
+        /* --- UYGULAMA EKRANI --- */
+        #app-screen { display: none; height: 100%; flex-direction: column; }
+        
+        /* Üst Bar */
+        header {
+            background-color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; height: 60px;
+        }
+        .header-info h2 { margin: 0; color: #333; font-size: 18px; }
+        .header-info span { font-size: 12px; color: #25D366; font-weight: bold; }
+        .add-btn { 
+            background: #25D366; color: white; width: 45px; height: 45px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4); 
+            border: none; transition: 0.2s;
+        }
+        .add-btn:active { transform: scale(0.9); }
+
+        /* Sohbet Alanı */
+        #chat-area {
+            flex: 1; overflow-y: auto; padding: 20px;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-repeat: repeat;
+            display: flex; flex-direction: column; gap: 15px;
+            scroll-behavior: smooth;
+        }
+
+        /* Mesaj Balonları */
+        .message { 
+            max-width: 75%; padding: 12px; border-radius: 18px; 
+            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            display: flex; flex-direction: column; animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .message img { width: 100%; border-radius: 12px; margin-bottom: 8px; object-fit: cover; max-height: 350px; display: block; }
+        .msg-text { font-size: 15px; line-height: 1.5; word-wrap: break-word; }
+        .msg-date { font-size: 11px; text-align: right; margin-top: 6px; opacity: 0.6; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+
+        /* ELYAS TEMASI (Sol - Mavi) */
+        .message-left { align-self: flex-start; background-color: #e3f2fd; color: #1565c0; border-top-left-radius: 2px; }
+        
+        /* AYSU TEMASI (Sağ - Pembe) */
+        .message-right { align-self: flex-end; background-color: #fce4ec; color: #ad1457; border-top-right-radius: 2px; }
+
+        /* --- MODAL (Anı Ekleme) --- */
+        #modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .modal-content h3 { margin-top: 0; color: #444; }
+        .modal-content input, .modal-content textarea { width: 90%; margin: 10px 0; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Hoş Geldin ❤️</h2>
+            <input type="text" id="username" placeholder="Kullanıcı Adı (elyas / aysu)">
+            <input type="password" id="password" placeholder="Şifre">
+            <button class="login-btn" onclick="login()">Giriş Yap</button>
+            <p id="login-error" style="color:red; font-size:13px; margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <div id="app-screen">
+        <header>
+            <div style="display:flex; align-items:center;">
+                <div style="font-size: 28px; margin-right: 12px;">💑</div>
+                <div class="header-info">
+                    <h2 id="header-title">Bizim Hikayemiz</h2>
+                    <span id="user-display"></span>
+                </div>
+            </div>
+            <button class="add-btn" onclick="openModal()">+</button>
+        </header>
+
+        <div id="chat-area">
+            <p style="text-align:center; color:#888; margin-top:50px;">Anılar yükleniyor...</p>
+        </div>
+    </div>
+
+    <div id="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content">
+            <h3>Yeni Bir Anı Ekle ✨</h3>
+            <input type="file" id="photo-input" accept="image/*">
+            <div style="text-align:left; font-size:12px; color:#666; margin-left:15px;">Tarih Seç:</div>
+            <input type="datetime-local" id="date-input">
+            <textarea id="note-input" rows="4" placeholder="O ana dair bir şeyler yaz..."></textarea>
+            <button class="login-btn" id="send-btn" onclick="uploadMemory()">Paylaş 🚀</button>
+            <p id="upload-status" style="margin-top:10px; font-size:14px; color:#555;"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+
+        // SENİN EKRAN GÖRÜNTÜSÜNDEN ALDIĞIM BİLGİLER
+        const firebaseConfig = {
+            apiKey: "AIzaSyASFvP6x0g8QEuFFQ4m15e_SFvuy_GW4Z0",
+            authDomain: "dogumgunu-7e3be.firebaseapp.com",
+            projectId: "dogumgunu-7e3be",
+            storageBucket: "dogumgunu-7e3be.firebasestorage.app",
+            messagingSenderId: "615270148190",
+            appId: "1:615270148190:web:9babee9302468cdce2accf",
+            measurementId: "G-00KGS3J5WD"
+        };
+
+        // Firebase Başlatma
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        
+        let currentUser = null; 
+
+        // --- GİRİŞ İŞLEMLERİ ---
+        window.login = () => {
+            const u = document.getElementById("username").value.trim().toLowerCase();
+            const p = document.getElementById("password").value.trim();
+            const err = document.getElementById("login-error");
+
+            if (u === "elyas" && p === "elyo25") {
+                currentUser = "elyas";
+                enterApp("Elyas");
+            } else if (u === "aysu" && p === "aysu025") {
+                currentUser = "aysu";
+                enterApp("Aysu");
+            } else {
+                err.innerText = "Kullanıcı adı veya şifre hatalı!";
+                setTimeout(() => err.innerText = "", 3000);
+            }
+        };
+
+        function enterApp(name) {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-screen").style.display = "flex";
+            document.getElementById("user-display").innerText = name + " Çevrimiçi";
+            loadMemories(); 
+        }
+
+        // --- MESAJLARI ÇEKME (CHAT AKIŞI) ---
+        function loadMemories() {
+            const chatArea = document.getElementById("chat-area");
+            // Tarihe göre eskiden yeniye sırala (Chat mantığı)
+            const q = query(collection(db, "chat_anilar"), orderBy("tarih", "asc"));
+
+            onSnapshot(q, (snapshot) => {
+                chatArea.innerHTML = ""; 
+                
+                if (snapshot.empty) {
+                    chatArea.innerHTML = "<p style='text-align:center; color:#999; margin-top:20px;'>Henüz hiç anı yok. İlkini sen ekle! 👇</p>";
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const dateObj = new Date(data.tarih);
+                    
+                    // Tarih Formatlama
+                    const timeStr = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                    const dateStr = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    // Kimin gönderdiğine göre stil
+                    let themeClass = (data.user === "elyas") ? "message-left" : "message-right";
+                    let senderName = (data.user === "elyas") ? "Elyas" : "Aysu";
+
+                    const html = `
+                        <div class="message ${themeClass}">
+                            ${data.resimUrl ? `<img src="${data.resimUrl}" onclick="window.open(this.src)">` : ''}
+                            <div class="msg-text">
+                                ${data.not ? data.not : ''}
+                            </div>
+                            <div class="msg-date">
+                                <span>${dateStr} - ${timeStr}</span>
+                                ${data.resimUrl ? '📷' : ''}
+                            </div>
+                        </div>
+                    `;
+                    chatArea.innerHTML += html;
+                });
+                // Sayfayı en alta kaydır
+                setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 100);
+            });
+        }
+
+        // --- ANI YÜKLEME ---
+        window.uploadMemory = async () => {
+            const file = document.getElementById("photo-input").files[0];
+            const dateVal = document.getElementById("date-input").value;
+            const note = document.getElementById("note-input").value;
+            const status = document.getElementById("upload-status");
+            const btn = document.getElementById("send-btn");
+
+            if (!note && !file) { 
+                status.innerText = "❌ Lütfen bir fotoğraf veya not ekle."; 
+                return; 
+            }
+
+            btn.disabled = true;
+            status.innerText = "⏳ Yükleniyor, lütfen bekle...";
+
+            try {
+                let downloadURL = "";
+                
+                // 1. Resim varsa Storage'a yükle
+                if (file) {
+                    const storageRef = ref(storage, 'chat_fotolar/' + Date.now() + '-' + file.name);
+                    await uploadBytes(storageRef, file);
+                    downloadURL = await getDownloadURL(storageRef);
+                }
+
+                // 2. Veritabanına Yaz
+                // Eğer tarih seçilmediyse şu anı al
+                const finalDate = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
+
+                await addDoc(collection(db, "chat_anilar"), {
+                    user: currentUser,
+                    resimUrl: downloadURL,
+                    tarih: finalDate,
+                    not: note,
+                    eklenmeZamani: new Date()
+                });
+
+                closeModal();
+                // Formu sıfırla
+                document.getElementById("photo-input").value = "";
+                document.getElementById("note-input").value = "";
+                document.getElementById("date-input").value = "";
+                status.innerText = "";
+
+            } catch (error) {
+                console.error("Hata Detayı:", error);
+                status.innerText = "⚠️ Bir hata oluştu! Storage kurallarını kontrol et.";
+                alert("Yükleme hatası: " + error.message);
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        // Modal Kontrolleri
+        window.openModal = () => document.getElementById("modal").style.display = "flex";
+        window.closeModal = () => {
+            document.getElementById("modal").style.display = "none";
+            document.getElementById("upload-status").innerText = "";
+        };
+
+        // Dışarıya tıklandığında modalı kapat
+        window.onclick = function(event) {
+            const modal = document.getElementById("modal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
