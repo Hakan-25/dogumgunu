@@ -204,7 +204,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
         // FIREBASE CONFIG
         const firebaseConfig = {
@@ -219,7 +218,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         let currentUser = null;
 
@@ -317,8 +315,29 @@
                 }
             }
         };
-
-        // --- ANI YÜKLEME ---
+// --- RESMİ METNE ÇEVİRME (BASE64) ---
+        const compressImage = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const maxWidth = 800; // Resmi küçültüyoruz ki veritabanı dolmasın
+                        const scaleSize = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // Kalite ayarı
+                    };
+                };
+                reader.onerror = (error) => reject(error);
+            });
+        };
+        // --- YENİ YÜKLEME FONKSİYONU (HATA VERMEZ) ---
         window.uploadMemory = async () => {
             const file = document.getElementById("photo-input").files[0];
             const dateVal = document.getElementById("date-input").value;
@@ -329,26 +348,40 @@
             if (!note && !file) { status.innerText = "Boş anı olmaz :)"; return; }
 
             btn.disabled = true;
-            status.innerText = "Anı sonsuzluğa yükleniyor...";
+            status.innerText = "Anı kaydediliyor...";
 
             try {
-                let downloadURL = "";
+                let base64Image = "";
                 if (file) {
-                    const storageRef = ref(storage, 'chat_fotolar/' + Date.now() + '-' + file.name);
-                    await uploadBytes(storageRef, file);
-                    downloadURL = await getDownloadURL(storageRef);
+                    status.innerText = "Fotoğraf işleniyor...";
+                    // Resmi depoya değil, direkt yazıya çeviriyoruz
+                    base64Image = await compressImage(file);
                 }
 
                 const finalDate = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
 
+                // Veritabanına resmin kendisini (kod olarak) ekliyoruz
                 await addDoc(collection(db, "chat_anilar"), {
                     user: currentUser,
-                    resimUrl: downloadURL,
+                    resimUrl: base64Image, 
                     tarih: finalDate,
                     not: note,
                     createdAt: new Date()
                 });
 
+                toggleModal(false);
+                document.getElementById("photo-input").value = "";
+                document.getElementById("note-input").value = "";
+                document.getElementById("date-input").value = "";
+                status.innerText = "";
+
+            } catch (error) {
+                console.error(error);
+                alert("Hata: " + error.message);
+            } finally {
+                btn.disabled = false;
+            }
+        };
                 toggleModal(false);
                 document.getElementById("photo-input").value = "";
                 document.getElementById("note-input").value = "";
