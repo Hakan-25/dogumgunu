@@ -2,122 +2,204 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bizim Hikayemiz ❤️</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bizim Dünyamız 🌍❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- GENEL AYARLAR --- */
-        body { margin: 0; font-family: 'Nunito', sans-serif; background-color: #e5ddd5; overflow: hidden; height: 100vh; }
-        
-        /* --- GİRİŞ EKRANI (Login) --- */
+        :root {
+            --elyas-color: #4facfe;
+            --elyas-bg: #e0c3fc;
+            --aysu-color: #ff9a9e;
+            --aysu-bg: #fecfef;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* --- ARKA PLAN ANİMASYONU --- */
+        .background-shapes {
+            position: absolute; width: 100%; height: 100%; overflow: hidden; z-index: -1;
+        }
+        .shape {
+            position: absolute; filter: blur(50px); opacity: 0.6; animation: float 10s infinite alternate;
+        }
+        .s1 { width: 300px; height: 300px; background: #ff9a9e; top: -50px; left: -50px; border-radius: 50%; }
+        .s2 { width: 400px; height: 400px; background: #a18cd1; bottom: -100px; right: -50px; border-radius: 50%; animation-duration: 15s; }
+        @keyframes float { from { transform: translate(0, 0); } to { transform: translate(30px, 50px); } }
+
+        /* --- GİRİŞ EKRANI --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             z-index: 1000;
         }
-        .login-box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; width: 80%; max-width: 300px; }
-        .login-box h2 { color: #333; margin-bottom: 20px; }
-        .login-box input { width: 85%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
-        .login-btn { background: #ff6b6b; color: white; border: none; padding: 12px; border-radius: 25px; cursor: pointer; width: 95%; font-size: 16px; margin-top: 15px; font-weight: bold; transition: 0.3s; }
-        .login-btn:hover { background: #ee5253; transform: scale(1.02); }
-
-        /* --- UYGULAMA EKRANI --- */
-        #app-screen { display: none; height: 100%; flex-direction: column; }
-        
-        /* Üst Bar */
-        header {
-            background-color: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; height: 60px;
+        .login-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px; border-radius: 25px;
+            box-shadow: var(--shadow);
+            text-align: center; width: 85%; max-width: 350px;
         }
-        .header-info h2 { margin: 0; color: #333; font-size: 18px; }
-        .header-info span { font-size: 12px; color: #25D366; font-weight: bold; }
-        .add-btn { 
-            background: #25D366; color: white; width: 45px; height: 45px; 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            font-size: 28px; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4); 
-            border: none; transition: 0.2s;
+        .login-card h2 { color: #555; margin-bottom: 20px; font-weight: 600; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .login-card input {
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            background: rgba(255,255,255,0.9); box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            font-size: 16px; outline: none; transition: 0.3s;
+        }
+        .login-card input:focus { transform: scale(1.02); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        
+        .btn-grad {
+            background-image: linear-gradient(to right, #FF512F 0%, #DD2476 51%, #FF512F 100%);
+            margin: 10px; padding: 15px 45px; text-align: center; text-transform: uppercase;
+            transition: 0.5s; background-size: 200% auto; color: white;            
+            box-shadow: 0 0 20px #eee; border-radius: 50px; border: none; cursor: pointer; display: block; width: 100%; font-weight: bold;
+        }
+        .btn-grad:hover { background-position: right center; color: #fff; text-decoration: none; }
+
+        /* --- ANA EKRAN --- */
+        #app-screen { width: 100%; max-width: 600px; display: none; flex-direction: column; height: 100vh; position: relative; background: rgba(255,255,255,0.4); backdrop-filter: blur(5px); }
+
+        /* HEADER */
+        header {
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 10;
+        }
+        .profile-info h3 { margin: 0; font-size: 18px; color: #333; }
+        .profile-info span { font-size: 12px; color: #888; font-weight: 300; }
+        .add-btn {
+            width: 45px; height: 45px; border-radius: 50%; border: none;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            color: white; font-size: 24px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+            transition: transform 0.2s;
         }
         .add-btn:active { transform: scale(0.9); }
 
-        /* Sohbet Alanı */
+        /* CHAT ALANI */
         #chat-area {
             flex: 1; overflow-y: auto; padding: 20px;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-repeat: repeat;
-            display: flex; flex-direction: column; gap: 15px;
+            display: flex; flex-direction: column; gap: 20px;
             scroll-behavior: smooth;
         }
-
-        /* Mesaj Balonları */
-        .message { 
-            max-width: 75%; padding: 12px; border-radius: 18px; 
-            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            display: flex; flex-direction: column; animation: fadeIn 0.3s ease;
+        
+        /* MESAJ BALONLARI */
+        .message {
+            max-width: 80%; padding: 15px; border-radius: 20px;
+            position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            font-size: 15px; line-height: 1.5; color: #444;
+            animation: slideUp 0.4s ease forwards; opacity: 0; transform: translateY(20px);
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .message img { width: 100%; border-radius: 12px; margin-bottom: 8px; object-fit: cover; max-height: 350px; display: block; }
-        .msg-text { font-size: 15px; line-height: 1.5; word-wrap: break-word; }
-        .msg-date { font-size: 11px; text-align: right; margin-top: 6px; opacity: 0.6; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ELYAS TEMASI (Sol - Mavi) */
-        .message-left { align-self: flex-start; background-color: #e3f2fd; color: #1565c0; border-top-left-radius: 2px; }
-        
-        /* AYSU TEMASI (Sağ - Pembe) */
-        .message-right { align-self: flex-end; background-color: #fce4ec; color: #ad1457; border-top-right-radius: 2px; }
+        .message img { width: 100%; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .msg-time { font-size: 10px; text-align: right; opacity: 0.6; margin-top: 5px; }
 
-        /* --- MODAL (Anı Ekleme) --- */
+        /* TEMALAR */
+        /* Elyas Mesajı (Sağdaysa pembe değil mavi olsun, soldaysa mavi) - Senaryo: Kendi mesajımız sağda */
+        .msg-self {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #1565c0; border-bottom-right-radius: 2px;
+        }
+        /* Aysu Mesajı */
+        .msg-other {
+            align-self: flex-start;
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); /* Karışık pastel */
+            background: white;
+            border: 1px solid white;
+            color: #555; border-bottom-left-radius: 2px;
+        }
+
+        /* ELYAS GİRDİĞİNDE GÖRÜNÜM AYARI */
+        body.theme-elyas .msg-self { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); color: white; }
+        body.theme-elyas .msg-other { background: white; color: #555; }
+        
+        /* AYSU GİRDİĞİNDE GÖRÜNÜM AYARI */
+        body.theme-aysu .msg-self { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: white; }
+        body.theme-aysu .msg-other { background: white; color: #555; }
+
+        /* --- MODAL --- */
         #modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-            display: none; justify-content: center; align-items: center; z-index: 2000;
-            backdrop-filter: blur(5px);
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000;
+            display: flex; align-items: flex-end; transition: 0.3s;
         }
-        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-        .modal-content h3 { margin-top: 0; color: #444; }
-        .modal-content input, .modal-content textarea { width: 90%; margin: 10px 0; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; }
-        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: white; }
+        #modal.active { bottom: 0; }
+        .modal-sheet {
+            background: white; width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px;
+            padding: 30px; animation: slideUpSheet 0.3s ease;
+        }
+        @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .modal-sheet h3 { margin-top: 0; color: #333; }
+        .modal-sheet input, .modal-sheet textarea {
+            width: 100%; padding: 15px; margin: 10px 0;
+            border: 1px solid #eee; border-radius: 15px; background: #f9f9f9; font-family: inherit;
+        }
+        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
+
     </style>
 </head>
 <body>
 
+    <div class="background-shapes">
+        <div class="shape s1"></div>
+        <div class="shape s2"></div>
+    </div>
+
     <div id="login-screen">
-        <div class="login-box">
+        <div class="login-card">
             <h2>Hoş Geldin ❤️</h2>
-            <input type="text" id="username" placeholder="Kullanıcı Adı (elyas / aysu)">
-            <input type="password" id="password" placeholder="Şifre">
-            <button class="login-btn" onclick="login()">Giriş Yap</button>
-            <p id="login-error" style="color:red; font-size:13px; margin-top:10px;"></p>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Kullanıcı Adı">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Şifre">
+            </div>
+            <button class="btn-grad" onclick="login()">Giriş Yap</button>
+            <p id="login-error" style="color: #e74c3c; font-size: 13px; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app-screen">
         <header>
-            <div style="display:flex; align-items:center;">
-                <div style="font-size: 28px; margin-right: 12px;">💑</div>
-                <div class="header-info">
-                    <h2 id="header-title">Bizim Hikayemiz</h2>
-                    <span id="user-display"></span>
-                </div>
+            <div class="profile-info">
+                <h3>Bizim Hikayemiz</h3>
+                <span id="status-text">Bağlanıyor...</span>
             </div>
             <button class="add-btn" onclick="openModal()">+</button>
         </header>
 
         <div id="chat-area">
-            <p style="text-align:center; color:#888; margin-top:50px;">Anılar yükleniyor...</p>
-        </div>
+            </div>
     </div>
 
-    <div id="modal">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <div class="modal-content">
-            <h3>Yeni Bir Anı Ekle ✨</h3>
+    <div id="modal" onclick="closeModal(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="toggleModal(false)">&times;</span>
+            <h3>Anı Ekle ✨</h3>
             <input type="file" id="photo-input" accept="image/*">
-            <div style="text-align:left; font-size:12px; color:#666; margin-left:15px;">Tarih Seç:</div>
             <input type="datetime-local" id="date-input">
-            <textarea id="note-input" rows="4" placeholder="O ana dair bir şeyler yaz..."></textarea>
-            <button class="login-btn" id="send-btn" onclick="uploadMemory()">Paylaş 🚀</button>
-            <p id="upload-status" style="margin-top:10px; font-size:14px; color:#555;"></p>
+            <textarea id="note-input" rows="3" placeholder="O ana dair notun..."></textarea>
+            <button class="btn-grad" id="send-btn" onclick="uploadMemory()">Paylaş 🚀</button>
+            <p id="upload-status" style="text-align: center; color: #888; font-size: 12px; margin-top: 10px;"></p>
         </div>
     </div>
 
@@ -126,7 +208,7 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-        // SENİN EKRAN GÖRÜNTÜSÜNDEN ALDIĞIM BİLGİLER
+        // SENİN EKRAN GÖRÜNTÜSÜNDEN ALINAN AYARLAR
         const firebaseConfig = {
             apiKey: "AIzaSyASFvP6x0g8QEuFFQ4m15e_SFvuy_GW4Z0",
             authDomain: "dogumgunu-7e3be.firebaseapp.com",
@@ -137,12 +219,11 @@
             measurementId: "G-00KGS3J5WD"
         };
 
-        // Firebase Başlatma
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
-        
-        let currentUser = null; 
+
+        let currentUser = null;
 
         // --- GİRİŞ İŞLEMLERİ ---
         window.login = () => {
@@ -152,65 +233,66 @@
 
             if (u === "elyas" && p === "elyo25") {
                 currentUser = "elyas";
+                document.body.classList.add("theme-elyas");
                 enterApp("Elyas");
             } else if (u === "aysu" && p === "aysu025") {
                 currentUser = "aysu";
+                document.body.classList.add("theme-aysu");
                 enterApp("Aysu");
             } else {
-                err.innerText = "Kullanıcı adı veya şifre hatalı!";
-                setTimeout(() => err.innerText = "", 3000);
+                err.innerText = "Hatalı giriş bilgileri!";
+                shakeForm();
             }
         };
 
-        function enterApp(name) {
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("app-screen").style.display = "flex";
-            document.getElementById("user-display").innerText = name + " Çevrimiçi";
-            loadMemories(); 
+        function shakeForm() {
+            const card = document.querySelector('.login-card');
+            card.style.transform = "translateX(10px)";
+            setTimeout(() => card.style.transform = "translateX(-10px)", 100);
+            setTimeout(() => card.style.transform = "translateX(0)", 200);
         }
 
-        // --- MESAJLARI ÇEKME (CHAT AKIŞI) ---
+        function enterApp(name) {
+            document.getElementById("login-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("app-screen").style.display = "flex";
+            }, 500);
+            
+            document.getElementById("status-text").innerText = name + " Çevrimiçi";
+            loadMemories();
+        }
+
+        // --- MESAJLARI YÜKLE ---
         function loadMemories() {
             const chatArea = document.getElementById("chat-area");
-            // Tarihe göre eskiden yeniye sırala (Chat mantığı)
             const q = query(collection(db, "chat_anilar"), orderBy("tarih", "asc"));
 
             onSnapshot(q, (snapshot) => {
-                chatArea.innerHTML = ""; 
+                chatArea.innerHTML = "";
                 
-                if (snapshot.empty) {
-                    chatArea.innerHTML = "<p style='text-align:center; color:#999; margin-top:20px;'>Henüz hiç anı yok. İlkini sen ekle! 👇</p>";
-                    return;
-                }
-
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     const dateObj = new Date(data.tarih);
-                    
-                    // Tarih Formatlama
                     const timeStr = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                    const dateStr = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+                    const dateStr = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
 
-                    // Kimin gönderdiğine göre stil
-                    let themeClass = (data.user === "elyas") ? "message-left" : "message-right";
-                    let senderName = (data.user === "elyas") ? "Elyas" : "Aysu";
+                    // Mesaj bizden mi, karşıdan mı?
+                    const isSelf = data.user === currentUser;
+                    const cssClass = isSelf ? "msg-self" : "msg-other";
 
                     const html = `
-                        <div class="message ${themeClass}">
+                        <div class="message ${cssClass}">
                             ${data.resimUrl ? `<img src="${data.resimUrl}" onclick="window.open(this.src)">` : ''}
-                            <div class="msg-text">
-                                ${data.not ? data.not : ''}
-                            </div>
-                            <div class="msg-date">
-                                <span>${dateStr} - ${timeStr}</span>
-                                ${data.resimUrl ? '📷' : ''}
-                            </div>
+                            <div>${data.not || ''}</div>
+                            <div class="msg-time">${dateStr}, ${timeStr} ${data.resimUrl ? '📷' : ''}</div>
                         </div>
                     `;
                     chatArea.innerHTML += html;
                 });
-                // Sayfayı en alta kaydır
-                setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 100);
+                
+                // En alta kaydır
+                setTimeout(() => chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' }), 100);
             });
         }
 
@@ -222,65 +304,52 @@
             const status = document.getElementById("upload-status");
             const btn = document.getElementById("send-btn");
 
-            if (!note && !file) { 
-                status.innerText = "❌ Lütfen bir fotoğraf veya not ekle."; 
-                return; 
-            }
+            if (!note && !file) { status.innerText = "Lütfen boş gönderme :)"; return; }
 
             btn.disabled = true;
-            status.innerText = "⏳ Yükleniyor, lütfen bekle...";
+            status.innerText = "Anı sonsuzluğa yükleniyor...";
 
             try {
                 let downloadURL = "";
-                
-                // 1. Resim varsa Storage'a yükle
                 if (file) {
                     const storageRef = ref(storage, 'chat_fotolar/' + Date.now() + '-' + file.name);
                     await uploadBytes(storageRef, file);
                     downloadURL = await getDownloadURL(storageRef);
                 }
 
-                // 2. Veritabanına Yaz
-                // Eğer tarih seçilmediyse şu anı al
                 const finalDate = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
 
                 await addDoc(collection(db, "chat_anilar"), {
                     user: currentUser,
                     resimUrl: downloadURL,
                     tarih: finalDate,
-                    not: note,
-                    eklenmeZamani: new Date()
+                    not: note
                 });
 
-                closeModal();
-                // Formu sıfırla
+                toggleModal(false);
                 document.getElementById("photo-input").value = "";
                 document.getElementById("note-input").value = "";
                 document.getElementById("date-input").value = "";
                 status.innerText = "";
 
             } catch (error) {
-                console.error("Hata Detayı:", error);
-                status.innerText = "⚠️ Bir hata oluştu! Storage kurallarını kontrol et.";
-                alert("Yükleme hatası: " + error.message);
+                console.error(error);
+                status.innerText = "Hata oldu: " + error.message;
             } finally {
                 btn.disabled = false;
             }
         };
 
-        // Modal Kontrolleri
-        window.openModal = () => document.getElementById("modal").style.display = "flex";
-        window.closeModal = () => {
-            document.getElementById("modal").style.display = "none";
-            document.getElementById("upload-status").innerText = "";
+        // --- MODAL İŞLEMLERİ ---
+        window.openModal = () => toggleModal(true);
+        window.closeModal = (e) => {
+            if (e.target.id === "modal") toggleModal(false);
         };
-
-        // Dışarıya tıklandığında modalı kapat
-        window.onclick = function(event) {
+        
+        function toggleModal(show) {
             const modal = document.getElementById("modal");
-            if (event.target == modal) {
-                closeModal();
-            }
+            if (show) modal.classList.add("active");
+            else modal.classList.remove("active");
         }
     </script>
 </body>
