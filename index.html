@@ -14,6 +14,9 @@
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.5);
             --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            /* Sabit Renk Gradiyentleri */
+            --elyas-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --aysu-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -116,19 +119,21 @@
             transition: opacity 0.3s;
         }
         .message img:hover { opacity: 0.9; }
-        .msg-time { font-size: 10px; text-align: right; opacity: 0.6; margin-top: 5px; }
+
+        .msg-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
+        .msg-time { font-size: 10px; text-align: right; opacity: 0.7; color: white; }
+        
+        /* Silme Butonu Stili */
+        .del-btn { cursor: pointer; font-size: 14px; opacity: 0.7; transition: 0.3s; color: white; padding-left: 10px; }
+        .del-btn:hover { opacity: 1; transform: scale(1.2); }
 
         /* TEMALAR VE YÖNLER */
         .msg-self { align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg-other { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
+        .msg-other { align-self: flex-start; border-bottom-left-radius: 2px; }
 
-        /* Elyas Giriş Yaptığında Kendi Mesajları Mavi */
-        body.theme-elyas .msg-self { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
-        body.theme-elyas .msg-self .msg-time { color: white; }
-
-        /* Aysu Giriş Yaptığında Kendi Mesajları Pembe */
-        body.theme-aysu .msg-self { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: white; }
-        body.theme-aysu .msg-self .msg-time { color: white; }
+        /* RENK SABİTLEME MANTIĞI */
+        .message-elyas { background: var(--elyas-gradient); color: white; }
+        .message-aysu { background: var(--aysu-gradient); color: white; }
 
         /* --- MODAL (ANI EKLEME) --- */
         #modal {
@@ -144,7 +149,7 @@
         .modal-sheet h3 { margin-top: 0; color: #333; font-size: 20px; }
         .modal-sheet input, .modal-sheet textarea {
             width: 100%; padding: 15px; margin: 10px 0;
-            border: 1px solid #eee; border-radius: 15px; background: #f9f9f9; font-family: inherit; outline: none;
+            border: 1px solid #eee; border-radius: 12px; background: #f9f9f9; font-family: inherit; outline: none;
         }
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 28px; cursor: pointer; color: #aaa; }
 
@@ -160,8 +165,12 @@
     <div id="login-screen">
         <div class="login-card">
             <h2>Hoş Geldin ❤️</h2>
-            <input type="text" id="username" placeholder="Kullanıcı Adı">
-            <input type="password" id="password" placeholder="Şifre">
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Kullanıcı Adı">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Şifre">
+            </div>
             <button class="btn-grad" onclick="login()">Giriş Yap</button>
             <p id="login-error" style="color: #e74c3c; font-size: 13px; margin-top: 15px;"></p>
         </div>
@@ -170,14 +179,14 @@
     <div id="app-screen">
         <header>
             <div class="profile-info">
-                <h3>Bizim Hikayemiz</h3>
+                <h3 id="app-title">Bizim Hikayemiz</h3>
                 <span id="status-text">Bağlanıyor...</span>
             </div>
             <button class="add-btn" onclick="openModal()">+</button>
         </header>
 
         <div id="chat-area">
-            </div>
+             </div>
     </div>
 
     <div id="modal" onclick="closeModal(event)">
@@ -194,7 +203,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
         // FIREBASE CONFIG
@@ -222,11 +231,9 @@
 
             if (u === "elyas" && p === "elyo25") {
                 currentUser = "elyas";
-                document.body.classList.add("theme-elyas");
                 enterApp("Elyas");
             } else if (u === "aysu" && p === "aysu025") {
                 currentUser = "aysu";
-                document.body.classList.add("theme-aysu");
                 enterApp("Aysu");
             } else {
                 err.innerText = "Kullanıcı adı veya şifre hatalı!";
@@ -251,10 +258,10 @@
             loadMemories();
         }
 
-        // --- ANI LİSTELEME ---
+        // --- ANI LİSTELEME VE SİLME MANTIĞI ---
         function loadMemories() {
             const chatArea = document.getElementById("chat-area");
-            // Veritabanında "chat_anilar" koleksiyonu kullanılacak
+            // Koleksiyon ismi
             const q = query(collection(db, "chat_anilar"), orderBy("tarih", "asc"));
 
             onSnapshot(q, (snapshot) => {
@@ -263,10 +270,11 @@
                     chatArea.innerHTML = "<p style='text-align:center; color:#999; margin-top:50px;'>Henüz hiç anı yok. İlkini sen ekle! 👇</p>";
                 }
                 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
+                snapshot.forEach((snapshotDoc) => {
+                    const data = snapshotDoc.data();
+                    const docId = snapshotDoc.id;
                     
-                    // TARİH DOĞRULAMA (Invalid Date hatasını önler)
+                    // TARİH DOĞRULAMA
                     let timeDisplay = "Anı Zamanı";
                     try {
                         const dateObj = data.tarih ? new Date(data.tarih) : null;
@@ -277,13 +285,19 @@
                     } catch (e) { console.error("Tarih parse hatası:", e); }
 
                     const isSelf = data.user === currentUser;
-                    const cssClass = isSelf ? "msg-self" : "msg-other";
+                    const sideClass = isSelf ? "msg-self" : "msg-other";
+                    
+                    // RENK SABİTLEME: Elyas her zaman mavi, Aysu her zaman pembe
+                    const colorClass = data.user === "elyas" ? "message-elyas" : "message-aysu";
 
                     const html = `
-                        <div class="message ${cssClass}">
+                        <div class="message ${sideClass} ${colorClass}">
                             ${data.resimUrl ? `<img src="${data.resimUrl}" loading="lazy" onclick="window.open(this.src)">` : ''}
                             <div class="msg-text">${data.not || ''}</div>
-                            <div class="msg-time">${timeDisplay} ${data.resimUrl ? '📷' : ''}</div>
+                            <div class="msg-footer">
+                                <span class="msg-time">${timeDisplay} ${data.resimUrl ? '📷' : ''}</span>
+                                ${isSelf ? `<span class="del-btn" onclick="deleteMemory('${docId}')">🗑️</span>` : ''}
+                            </div>
                         </div>
                     `;
                     chatArea.innerHTML += html;
@@ -292,6 +306,17 @@
                 setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 200);
             });
         }
+
+        // --- SİLME FONKSİYONU ---
+        window.deleteMemory = async (id) => {
+            if(confirm("Bu anıyı kalıcı olarak silmek istiyor musun? 🥺")) {
+                try {
+                    await deleteDoc(doc(db, "chat_anilar", id));
+                } catch (e) {
+                    alert("Hata: " + e.message);
+                }
+            }
+        };
 
         // --- ANI YÜKLEME ---
         window.uploadMemory = async () => {
@@ -309,13 +334,11 @@
             try {
                 let downloadURL = "";
                 if (file) {
-                    // Storage yolu
                     const storageRef = ref(storage, 'chat_fotolar/' + Date.now() + '-' + file.name);
                     await uploadBytes(storageRef, file);
                     downloadURL = await getDownloadURL(storageRef);
                 }
 
-                // Tarih seçilmezse şu anı al
                 const finalDate = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
 
                 await addDoc(collection(db, "chat_anilar"), {
@@ -327,7 +350,6 @@
                 });
 
                 toggleModal(false);
-                // Temizlik
                 document.getElementById("photo-input").value = "";
                 document.getElementById("note-input").value = "";
                 document.getElementById("date-input").value = "";
@@ -335,8 +357,8 @@
 
             } catch (error) {
                 console.error(error);
-                status.innerText = "Hata oluştu! Storage kurallarını kontrol et.";
-                alert("Yükleme başarısız oldu. Lütfen internetini ve Firebase ayarlarını kontrol et.");
+                status.innerText = "Hata oluştu! Firebase Storage kurallarını kontrol et.";
+                alert("Yükleme başarısız! Storage ayarlarının 'if true' olduğundan emin ol.");
             } finally {
                 btn.disabled = false;
             }
